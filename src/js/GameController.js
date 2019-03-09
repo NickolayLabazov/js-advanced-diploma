@@ -93,6 +93,19 @@ for (let i = indexStrMin; i <=indexStrMax; i+=1){
     return allowedCell;
   }
 
+  attack(att, def){
+    console.log(att.attack);
+    console.log(def.defence);
+    def.health = def.health - (att.attack - def.defence);
+    if(def.health<=0){
+      console.log(this.pcPositions);
+      this.pcPositions = this.pcPositions.filter(elem => elem.character.health>0);
+      console.log(this.pcPositions);
+      this.allPositions = this.pcPositions.concat(this.gamerPositions);
+    this.gamePlay.redrawPositions(this.allPositions); // Отрисовка персонажей 
+    }
+  }
+
   descript(obj) {
     const smileLevel = String.fromCodePoint(0x1F396);
     const smileAtack = String.fromCodePoint(0x2694);
@@ -215,6 +228,13 @@ for(let elem of this.pcPositions){
           if (elem.position === index) {
             this.gamePlay.setCursor('crosshair');
             console.log('Атака');
+            let pc = 0;
+            for (const position of this.pcPositions) {
+              if (position.position === index) {      
+                pc = position.character;
+              }
+            }
+            this.attack(this.selectPers, pc);
           }
         }
         
