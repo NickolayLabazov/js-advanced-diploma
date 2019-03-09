@@ -1,4 +1,4 @@
-import { calcHealthLevel, calcTileType } from './utils';
+import { calcHealthLevel, calcTileType } from './utils.js';
 
 export default class GamePlay {
   constructor() {
@@ -55,6 +55,7 @@ export default class GamePlay {
       const cellEl = document.createElement('div');
       cellEl.classList.add('cell', 'map-tile', `map-tile-${calcTileType(i, this.boardSize)}`);
       cellEl.addEventListener('mouseenter', event => this.onCellEnter(event));
+      // cellEl.addEventListener('click', console.log('!'));
       cellEl.addEventListener('mouseleave', event => this.onCellLeave(event));
       cellEl.addEventListener('click', event => this.onCellClick(event));
       this.boardEl.appendChild(cellEl);
