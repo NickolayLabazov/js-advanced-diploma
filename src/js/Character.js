@@ -3,8 +3,6 @@ export default class Character {
     this.level = level;
     this.health = 50;
     this.type = type;
-    this.distance = 3;
-    this.distanceAttack = 2;
     if (!new.target) { throw 'Ошибка'; }
     // TODO: throw error if user use "new Character()"
   }
@@ -24,6 +22,8 @@ export const classes = [
       this.type = 'bowman';
       this.attack = 25;
       this.defence = 25;
+      this.distance = 4;
+      this.distanceAttack = 1;
     }
   },
 
@@ -33,6 +33,8 @@ export const classes = [
       this.type = 'undead';
       this.attack = 25;
       this.defence = 25;
+      this.distance = 4;
+      this.distanceAttack = 1;
     }
   },
 
@@ -42,6 +44,8 @@ export const classes = [
       this.type = 'swordsman';
       this.attack = 40;
       this.defence = 10;
+      this.distance = 2;
+      this.distanceAttack = 2;
     }
   },
 
@@ -51,6 +55,8 @@ export const classes = [
       this.type = 'vampire';
       this.attack = 40;
       this.defence = 10;
+      this.distance = 2;
+      this.distanceAttack = 2;
     }
   },
 
@@ -60,6 +66,8 @@ export const classes = [
       this.type = 'magician';
       this.attack = 10;
       this.defence = 40;
+      this.distance = 1;
+      this.distanceAttack = 4;
     }
   },
 
@@ -69,6 +77,8 @@ export const classes = [
       this.type = 'daemon';
       this.attack = 10;
       this.defence = 40;
+      this.distance = 1;
+      this.distanceAttack = 4;
     }
   },
 ];

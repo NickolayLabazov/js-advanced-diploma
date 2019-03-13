@@ -1,10 +1,8 @@
 import Team from './Team.js';
 import { classes } from './Character.js';
-import { characterGenerator, generateTeam } from './generators.js';
+import { generateTeam } from './generators.js';
 import PositionedCharacter from './PositionedCharacter.js';
 import GamePlay from './GamePlay.js';
-import themes from './themes.js';
-
 
 export default class GameController {
   constructor(gamePlay, stateService) {
@@ -23,8 +21,6 @@ export default class GameController {
     this.selectAllowedMove = [];
     this.selectAllowedAttack = [];
     this.actCounter = 0;
-    this.level = 1;
-    this.team = [];
   }
 
   allowedMove(position, pers) {
@@ -44,18 +40,24 @@ export default class GameController {
     for (let i = 1; i <= pers.distance; i += 1) {
       let alloweddColumn = indexColumn + i;
       if (alloweddColumn < this.gamePlay.boardSize) { allowedCell.push(boardArray[indexStr][alloweddColumn]); }
+
       let allowedStr = indexStr + i;
       if (allowedStr < this.gamePlay.boardSize) { allowedCell.push(boardArray[allowedStr][indexColumn]); }
+
       if ((alloweddColumn < this.gamePlay.boardSize) && (allowedStr < this.gamePlay.boardSize)) { allowedCell.push(boardArray[allowedStr][alloweddColumn]); }
+
       alloweddColumn = indexColumn - i;
       if (alloweddColumn >= 0) { allowedCell.push(boardArray[indexStr][alloweddColumn]); }
       if ((alloweddColumn >= 0) && (allowedStr < this.gamePlay.boardSize)) { allowedCell.push(boardArray[allowedStr][alloweddColumn]); }
+
       allowedStr = indexStr - i;
       if (allowedStr >= 0) { allowedCell.push(boardArray[allowedStr][indexColumn]); }
       if ((alloweddColumn >= 0) && (allowedStr >= 0)) { allowedCell.push(boardArray[allowedStr][alloweddColumn]); }
+
       alloweddColumn = indexColumn + i;
       if ((alloweddColumn < this.gamePlay.boardSize) && (allowedStr >= 0)) { allowedCell.push(boardArray[allowedStr][alloweddColumn]); }
     }
+
     return allowedCell;
   }
 
@@ -72,14 +74,17 @@ export default class GameController {
 
     const indexStr = Math.ceil(((position - position % this.gamePlay.boardSize) / this.gamePlay.boardSize));
     const indexColumn = position % this.gamePlay.boardSize;
+
     let indexStrMin = indexStr - pers.distanceAttack;
     if (indexStrMin < 0) { indexStrMin = 0; }
     let indexStrMax = indexStr + pers.distanceAttack;
     if (indexStrMax > this.gamePlay.boardSize - 1) { indexStrMax = this.gamePlay.boardSize - 1; }
+
     let indexColumnMin = indexColumn - pers.distanceAttack;
     if (indexColumnMin < 0) { indexColumnMin = 0; }
     let indexColumnMax = indexColumn + pers.distanceAttack;
     if (indexColumnMax > this.gamePlay.boardSize - 1) { indexColumnMax = this.gamePlay.boardSize - 1; }
+
     const allowedCell = [];
     for (let i = indexStrMin; i <= indexStrMax; i += 1) {
       for (let j = indexColumnMin; j <= indexColumnMax; j += 1) {
@@ -113,9 +118,11 @@ export default class GameController {
       }
     }
 
+
     this.allPositions = this.pcPositions.concat(this.gamerPositions);
     this.gamePlay.deselectCell(this.selected);// Снятие выделения
     this.gamePlay.redrawPositions(this.allPositions); // Отрисовка персонажей с новой позицией
+
     this.selected = 1;
     this.select = false;
     this.selectPers = 0;
@@ -125,6 +132,7 @@ export default class GameController {
     for (const elem of this.gamerPositions) {
       this.gamPos.push(elem.position);
     }
+
     for (const elem of this.pcPositions) {
       this.pcPos.push(elem.position);
     }
@@ -132,6 +140,7 @@ export default class GameController {
 
   pcAction() {
     const pcPositions = this.pcPositions;
+
     for (const position of pcPositions) {
       for (const gameCharacter of this.gamerPositions) {
         const attackCells = this.allowedAttack(position.position, position.character).indexOf(gameCharacter.position);
@@ -144,6 +153,7 @@ export default class GameController {
         }
       }
     }
+
 
     let dangerCells = [];
     for (const position of this.gamerPositions) { // Формирование ячеек, находящихся в поле действия атаки
@@ -195,20 +205,12 @@ export default class GameController {
   }
 
   attack(att, def) {
-    def.health -= (att.attack - 0.25 * def.defence);
+    def.health -= (att.attack - def.defence);
     if (def.health <= 0) {
       this.pcPositions = this.pcPositions.filter(elem => elem.character.health > 0);
-      this.gamerPositions = this.gamerPositions.filter(elem => elem.character.health > 0);
+
       this.allPositions = this.pcPositions.concat(this.gamerPositions);
       this.gamePlay.redrawPositions(this.allPositions); // Отрисовка персонажей
-      if (this.gamerPositions.length === 0) { alert('Game over'); } else if (this.pcPositions.length === 0) {
-        this.team.gamerTeam = [];
-        for (const pers of this.gamerPositions) {
-          this.team.gamerTeam.push(pers.character);
-        }
-        alert('Переход на следующий уровень');
-        this.levelUp();
-      }
     }
   }
 
@@ -221,73 +223,45 @@ export default class GameController {
     return result;
   }
 
-  levelUp() {
-    this.level += 1;    
-    for (const pers of this.team.gamerTeam) {
-      const attack = pers.attack * (1.8 - 0.01 * pers.health);
-      pers.attack = Math.max(pers.attack, attack);
-      const defence = pers.defence * (1.8 - 0.01 * pers.health);
-      pers.defence = Math.max(pers.defence, defence);
-      const health = pers.health + 80;
-      if (health <= 100) { pers.health = health; } else { pers.health = 100; }
-    }
+  init() {
+    const themes = 'prairie';
+    this.gamePlay.drawUi(themes); // Отрисовка поля
 
-    const generator = characterGenerator(classes, this.level - 1);
-    const newCharacter = generator.next().value;
-    this.team.gamerTeam.push(newCharacter);
-    this.gamerPositions = [];// персонажи и позиции, где находится персонаж игрока
-    this.pcPositions = [];// Персонажи и позиции, где находится персонаж компьютера
-    this.actCounter = 0;  
-    this.selected = 1;
-    this.select = false;  
-    this.init();
-  }
+    const team = new Team();
 
-  init() {   
-    console.log(this.actCounter) 
-    let theme = themes.prairie;
-    if (this.level === 2) { theme = themes.desert; }
-    if (this.level === 3) { theme = themes.arctic; }
-    if (this.level === 4) { theme = themes.mountain; }
-
-    this.gamePlay.drawUi(theme); // Отрисовка поля
-
-    if (this.level === 1) {
-      this.team = new Team();
-    }
     for (let i = 2; i < this.gamePlay.boardSize ** 2; i += 1) { // Заполнение this.positions возможными позициями
       if ((i % this.gamePlay.boardSize === 0) || (i % this.gamePlay.boardSize === 1)) { this.positions.push(i); }
     }
 
-    const closedPos = [-1]; // Последняя сгенерированная позиция для игрока
+    let pos = -1; // Последняя сгенерированная позиция для игрока
+
     function positionNumber(num, boardSize) { // Определение случайной позиции для игрока
       let posNumber = Math.ceil(Math.random() * (boardSize * 2)) - 1;
-      if (num.indexOf(posNumber) >= 0) { posNumber = positionNumber(num, boardSize); }
+      if (posNumber === num) { posNumber = positionNumber(num, boardSize); }
       return posNumber;
     }
-    for (const elem of this.team.gamerTeam) { // Выбор случайной позиции, где находится персонаж игрока
-      const pos = positionNumber(closedPos, this.gamePlay.boardSize);
-      closedPos.push(pos);
+
+    for (const elem of team.gamerTeam) { // Выбор случайной позиции, где находится персонаж игрока
+      pos = positionNumber(pos, this.gamePlay.boardSize);
       const position = new PositionedCharacter(elem, this.positions[pos]);
       this.gamerPositions.push(position); // Заполнение this.gamerPositions случайными позициями
     }
 
-    this.team.pcTeam = generateTeam(classes, this.level, this.team.gamerTeam.length); // Генерация команды компьютера
+    team.pcTeam = generateTeam(classes, 1, 2); // Генерация команды компьютера
+
     for (let i = 0; i < this.gamePlay.boardSize ** 2; i += 1) { // Заполнение this.positionsPC возможными позициями
       if ((i % this.gamePlay.boardSize === 6) || (i % this.gamePlay.boardSize === 7)) { this.positionsPC.push(i); }
     }
-    
-    for (const elem of this.team.pcTeam) { // Выбор случайной позиции, где находится персонаж компьютера
-      const pos = positionNumber(closedPos, this.gamePlay.boardSize);
-      closedPos.push(pos);      
+
+    for (const elem of team.pcTeam) { // Выбор случайной позиции, где находится персонаж компьютера
+      pos = positionNumber(pos, this.gamePlay.boardSize);
       const position = new PositionedCharacter(elem, this.positionsPC[pos]);
       this.pcPositions.push(position); // Заполнение this.gamerPositions случайными позициями
     }
 
-    
-
     this.allPositions = this.pcPositions.concat(this.gamerPositions);
     this.gamePlay.redrawPositions(this.allPositions); // Отрисовка персонажей
+
     for (const elem of this.gamerPositions) {
       this.gamPos.push(elem.position);
     }
@@ -295,6 +269,7 @@ export default class GameController {
     for (const elem of this.pcPositions) {
       this.pcPos.push(elem.position);
     }
+
 
     for (let i = 0; i < this.gamePlay.cells.length; i += 1) {
       this.gamePlay.cells[i].addEventListener('mouseenter', () => this.onCellEnter(i)); // Вызов реакции на наведение мыши
@@ -327,7 +302,6 @@ export default class GameController {
         this.pcAction();
       } else if (this.selectAllowedAttack.indexOf(index) >= 0) {
         const pers = this.checkIndex(index, this.pcPositions);
-        this.selected = index;
 
         this.attack(this.selectPers, pers);
         this.actCounter += 1;
@@ -343,10 +317,13 @@ export default class GameController {
     let positionsPC = false;
     let allowedMove = false;
     let allowedAttack = false;
+
+
     if (this.gamPos.indexOf(index) >= 0) { positions = true; }
     if (this.pcPos.indexOf(index) >= 0) { positionsPC = true; }
     if (this.selectAllowedMove.indexOf(index) >= 0) { allowedMove = true; }
     if (this.selectAllowedAttack.indexOf(index) >= 0) { allowedAttack = true; }
+
     if (positions) {
       this.gamePlay.setCursor('pointer');
       for (const position of this.gamerPositions) {
@@ -356,7 +333,6 @@ export default class GameController {
       }
     } else if (positionsPC && allowedAttack) { // Поправить !
       this.gamePlay.setCursor('crosshair');
-      this.gamePlay.selectCell(index, 'red');
       for (const position of this.pcPositions) {
         if (position.position === index) {
           this.gamePlay.showCellTooltip(this.descript(position.character), index); // Вызов описания
@@ -371,7 +347,6 @@ export default class GameController {
       }
     } else if (!positions && !positionsPC && allowedMove) {
       this.gamePlay.setCursor('pointer');
-      this.gamePlay.selectCell(index, 'green');
     } else { this.gamePlay.setCursor('not-allowed'); }
 
 
@@ -379,7 +354,6 @@ export default class GameController {
   }
 
   onCellLeave(index) {
-    this.gamePlay.deselectCell(index);
     this.gamePlay.setCursor('auto');
     // TODO: react to mouse leave
   }
