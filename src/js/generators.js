@@ -10,7 +10,11 @@
 
 export function* characterGenerator(allowedTypes, maxLevel) {
   const compareRandom = (A, B) => Math.random() - 0.5;
-  const hero = allowedTypes.sort(compareRandom);
+  const arr = [];
+  for (const elem of allowedTypes) {
+    arr.push(elem);
+  }
+  const hero = arr.sort(compareRandom);
   for (let i = 0; i < allowedTypes.length; i += 1) {
     const level = Math.ceil(Math.random() * (maxLevel - 1));
     const pers = new hero[i](level);
@@ -21,7 +25,12 @@ export function* characterGenerator(allowedTypes, maxLevel) {
 
 export function generateTeam(allowedTypes, maxLevel, characterCount) {
   const compareRandom = (A, B) => Math.random() - 0.5;
-  const hero = allowedTypes.sort(compareRandom);
+  const arr = [];
+  for (const elem of allowedTypes) {
+    arr.push(elem);
+  }
+
+  const hero = arr.sort(compareRandom);
   const charact = [];
   for (let i = 0; i < characterCount; i += 1) {
     const level = Math.ceil(Math.random() * (maxLevel));

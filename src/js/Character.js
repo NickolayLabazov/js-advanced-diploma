@@ -3,7 +3,8 @@ export default class Character {
     this.level = level;
     this.health = 50;
     this.type = type;
-    if (!new.target) { throw 'Ошибка'; }
+    // if (!(this.type === 'generic')) { throw 'Ошибка'; }
+    // if ((this.type === 'generic') && (new.target)) { throw 'Ошибка'; }
     // TODO: throw error if user use "new Character()"
   }
 
@@ -17,8 +18,8 @@ export default class Character {
 
 export const classes = [
   class Bowman extends Character {
-    constructor() {
-      super();
+    constructor(level) {
+      super(level);
       this.type = 'bowman';
       this.attack = 25;
       this.defence = 25;
@@ -28,8 +29,8 @@ export const classes = [
   },
 
   class Undead extends Character {
-    constructor() {
-      super();
+    constructor(level) {
+      super(level);
       this.type = 'undead';
       this.attack = 25;
       this.defence = 25;
@@ -39,8 +40,8 @@ export const classes = [
   },
 
   class Swordsman extends Character {
-    constructor() {
-      super();
+    constructor(level) {
+      super(level);
       this.type = 'swordsman';
       this.attack = 40;
       this.defence = 10;
@@ -50,8 +51,8 @@ export const classes = [
   },
 
   class Vampire extends Character {
-    constructor() {
-      super();
+    constructor(level) {
+      super(level);
       this.type = 'vampire';
       this.attack = 40;
       this.defence = 10;
@@ -61,8 +62,8 @@ export const classes = [
   },
 
   class Magician extends Character {
-    constructor() {
-      super();
+    constructor(level) {
+      super(level);
       this.type = 'magician';
       this.attack = 10;
       this.defence = 40;
@@ -72,8 +73,8 @@ export const classes = [
   },
 
   class Daemon extends Character {
-    constructor() {
-      super();
+    constructor(level) {
+      super(level);
       this.type = 'daemon';
       this.attack = 10;
       this.defence = 40;
