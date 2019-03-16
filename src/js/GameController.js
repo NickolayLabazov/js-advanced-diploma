@@ -206,30 +206,32 @@ export default class GameController {
   attack(att, def, index) {
     let damage = att.attack - 0.25 * def.defence;
     if (damage <= 0) { damage = 5; }
-    def.health -= damage;
-    this.gamePlay.showDamage(index, damage);
-    if (def.health <= 0) {
-      this.pcPositions = this.pcPositions.filter(elem => elem.character.health > 0);
-      this.gamerPositions = this.gamerPositions.filter(elem => elem.character.health > 0);
-      this.allPositions = this.pcPositions.concat(this.gamerPositions);
-      this.gamePlay.redrawPositions(this.allPositions); // Отрисовка персонажей
-      this.gamerPositions.length;
-      if (this.gamerPositions.length === 0) {
-        this.lock = false;
-        this.gamePlay.deselectCell(this.selected);
-        alert('Game over');
-      } else if (this.pcPositions.length === 0) {
-        this.team.gamerTeam.filter(elem => elem.health > 0);
-        if (this.level === 4) {
+    def.health -= damage;     
+    let health0 = () => {
+      if (def.health <= 0) {
+        this.pcPositions = this.pcPositions.filter(elem => elem.character.health > 0);
+        this.gamerPositions = this.gamerPositions.filter(elem => elem.character.health > 0);
+        this.allPositions = this.pcPositions.concat(this.gamerPositions);
+        this.gamePlay.redrawPositions(this.allPositions); // Отрисовка персонажей
+        this.gamerPositions.length;
+        if (this.gamerPositions.length === 0) {
           this.lock = false;
           this.gamePlay.deselectCell(this.selected);
-          alert('Победа');
-        } else {
-          alert('Переход на следующий уровень');
-          this.levelUp();
+          alert('Game over');
+        } else if (this.pcPositions.length === 0) {
+          this.team.gamerTeam.filter(elem => elem.health > 0);
+          if (this.level === 4) {
+            this.lock = false;
+            this.gamePlay.deselectCell(this.selected);
+            alert('Победа');
+          } else {
+            alert('Переход на следующий уровень');
+            this.levelUp();
+          }
         }
       }
-    }
+     }
+    this.gamePlay.showDamage(index, damage).then(() => health0())    
   }
 
   descript(obj) {
@@ -451,7 +453,7 @@ export default class GameController {
           this.attack(this.selectPers, pers, index);
           this.actCounter += 1;
           if (((this.level > 1) && (this.actCounter === 1))) {
-            this.actCounter += 1;
+            this.actCounter += 1 ;
           } else {
             this.pcAction();
           }
@@ -478,7 +480,7 @@ export default class GameController {
             this.gamePlay.showCellTooltip(this.descript(position.character), index); // Вызов описания
           }
         }
-      } else if (positionsPC && allowedAttack) { // Поправить !
+      } else if (positionsPC && allowedAttack) { 
         this.gamePlay.setCursor('crosshair');
         this.gamePlay.selectCell(index, 'red');
         for (const position of this.pcPositions) {

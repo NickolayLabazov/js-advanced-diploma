@@ -1,30 +1,23 @@
 export default class Character {
   constructor(level, type = 'generic') {
     this.level = level;
+    this.attack = 0;
+    this.defence = 0;
     this.health = 50;
-    this.type = type;
-    // if (!(this.type === 'generic')) { throw 'Ошибка'; }
-    // if ((this.type === 'generic') && (new.target)) { throw 'Ошибка'; }
-    // TODO: throw error if user use "new Character()"
-  }
-
-  levelUp() {
-    this.level += 1;
-    const health = this.health + 80;
-    if (health <= 100) { this.health = health; } else { this.health = 100; }
-  }
+    this.type = type;    
+    if(new.target.name === 'Character'){throw 'Ошибка'}    
+  }  
 }
-
 
 export const classes = [
   class Bowman extends Character {
     constructor(level) {
-      super(level);
+     super(level);    
       this.type = 'bowman';
       this.attack = 25;
       this.defence = 25;
       this.distance = 4;
-      this.distanceAttack = 1;
+      this.distanceAttack = 1;     
     }
   },
 
