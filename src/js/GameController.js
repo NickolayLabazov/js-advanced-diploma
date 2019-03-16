@@ -139,7 +139,11 @@ export default class GameController {
   }
 
   pcAction() {
-    const pcPositions = this.pcPositions;
+    const compareDist = (A, B) => {
+      return B.character.distanceAttack - A.character.distanceAttack
+    } 
+
+    const pcPositions = this.pcPositions.slice().sort(compareDist);
     for (const position of pcPositions) {
       for (const gameCharacter of this.gamerPositions) {
         const attackCells = this.allowedAttack(position.position, position.character).indexOf(gameCharacter.position);
@@ -182,7 +186,12 @@ export default class GameController {
         boardArray.push(arrayString);
         arrayString = [];
       }
-      const gamerPositions = this.gamerPositions;
+
+      const compareAtack = (A, B) => {
+        return B.character.attack - A.character.attack
+      } 
+  
+      const gamerPositions = this.gamerPositions.slice().sort(compareAtack);
       let newCall = [this.gamePlay.boardSize, pcPositions[0].position];
       const indexStrGame = Math.ceil(((gamerPositions[0].position - gamerPositions[0].position % this.gamePlay.boardSize) / this.gamePlay.boardSize));
       const indexColumnGame = gamerPositions[0].position % this.gamePlay.boardSize;
@@ -204,8 +213,7 @@ export default class GameController {
   }
 
   attack(att, def, index) {
-    let damage = att.attack - 0.25 * def.defence;
-    if (damage <= 0) { damage = 5; }
+    let damage = Math.max(att.attack - def.defence, att.attack * 0.1);
     def.health -= damage;     
     let health0 = () => {
       if (def.health <= 0) {
@@ -280,7 +288,6 @@ export default class GameController {
     for (let i = 2; i < this.gamePlay.boardSize ** 2; i += 1) { // Заполнение this.positions возможными позициями
       if ((i % this.gamePlay.boardSize === 0) || (i % this.gamePlay.boardSize === 1)) { this.positions.push(i); }
     }
-
 
     const closedPos = [-1]; // Последняя сгенерированная позиция для игрока
 
