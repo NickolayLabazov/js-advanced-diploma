@@ -334,6 +334,7 @@ export default class GameController {
   eventList() {
     for (let i = 0; i < this.gamePlay.cells.length; i += 1) {
       this.gamePlay.cells[i].addEventListener('mouseenter', () => this.onCellEnter(i)); // Вызов реакции на наведение мыши
+      this.gamePlay.cells[i].addEventListener('mouseenter', () => this.gamePlay.setCursor(this.onCellEnterCursor(i))); // Вызов реакции на наведение мыши
       this.gamePlay.cells[i].addEventListener('click', () => this.onCellClick(i));// Вызов реакции на клик
       this.gamePlay.cells[i].addEventListener('mouseleave', () => this.onCellLeave(i));// Вызов реакции на вывод мыши
     }
@@ -480,37 +481,56 @@ export default class GameController {
       if (this.selectAllowedMove.indexOf(index) >= 0) { allowedMove = true; }
       if (this.selectAllowedAttack.indexOf(index) >= 0) { allowedAttack = true; }
 
-      if (positions) {
-        this.gamePlay.setCursor('pointer');
+      if (positions) {        
         for (const position of this.gamerPositions) {
           if (position.position === index) {
             this.gamePlay.showCellTooltip(this.descript(position.character), index); // Вызов описания
           }
         }
-      } else if (positionsPC && allowedAttack) { 
-        this.gamePlay.setCursor('crosshair');
+      } else if (positionsPC && allowedAttack) {        
         this.gamePlay.selectCell(index, 'red');
         for (const position of this.pcPositions) {
           if (position.position === index) {
             this.gamePlay.showCellTooltip(this.descript(position.character), index); // Вызов описания
           }
         }
-      } else if (positionsPC && !allowedAttack) {
-        this.gamePlay.setCursor('not-allowed');
+      } else if (positionsPC && !allowedAttack) {        
         for (const position of this.pcPositions) {
           if (position.position === index) {
             this.gamePlay.showCellTooltip(this.descript(position.character), index); // Вызов описания
           }
         }
-      } else if (!positions && !positionsPC && allowedMove) {
-        this.gamePlay.setCursor('pointer');
+      } else if (!positions && !positionsPC && allowedMove) {        
         this.gamePlay.selectCell(index, 'green');
-      } else { this.gamePlay.setCursor('not-allowed'); }
+      } 
+    }
+  }
+
+  onCellEnterCursor(index) {
+    if (this.lock) {
+      let positions = false;
+      let positionsPC = false;
+      let allowedMove = false;
+      let allowedAttack = false;
+      if (this.gamPos.indexOf(index) >= 0) { positions = true; }
+      if (this.pcPos.indexOf(index) >= 0) { positionsPC = true; }
+      if (this.selectAllowedMove.indexOf(index) >= 0) { allowedMove = true; }
+      if (this.selectAllowedAttack.indexOf(index) >= 0) { allowedAttack = true; }
+
+      if (positions) {
+       return 'pointer';        
+      } else if (positionsPC && allowedAttack) { 
+        return 'crosshair';
+        } else if (positionsPC && !allowedAttack) {
+        return 'not-allowed';        
+      } else if (!positions && !positionsPC && allowedMove) {
+        return 'pointer';        
+      } else { return 'not-allowed' }
     }
   }
 
   onCellLeave(index) {
-    this.gamePlay.deselectCell(index);
+    if(this.selected != index){this.gamePlay.deselectCell(index)}
     this.gamePlay.setCursor('auto');
   }
 }
