@@ -16,8 +16,8 @@ export const classes = [
       this.type = 'bowman';
       this.attack = 25;
       this.defence = 25;
-      this.distance = 4;
-      this.distanceAttack = 1;     
+      this.distance = 2;
+      this.distanceAttack = 2;     
     }
   },
 
@@ -38,8 +38,8 @@ export const classes = [
       this.type = 'swordsman';
       this.attack = 40;
       this.defence = 10;
-      this.distance = 2;
-      this.distanceAttack = 2;
+      this.distance = 4;
+      this.distanceAttack = 1;
     }
   },
 

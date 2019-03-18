@@ -239,7 +239,10 @@ export default class GameController {
         }
       }
      }
-    this.gamePlay.showDamage(index, damage).then(() => health0())    
+    this.gamePlay.showDamage(index, damage).then(() => health0()
+    ).then(() => this.gamePlay.redrawPositions(this.allPositions)) // Отрисовка персонажей 
+    
+    
   }
 
   descript(obj) {
